@@ -20,7 +20,7 @@ class EmailStep extends React.Component {
         bindAll(this, [
             'handleSetEmailRef',
             'handleValidSubmit',
-            'validateEmail',
+            'validateEmailIfPresent',
             'validateForm',
             'setCaptchaRef',
             'captchaSolved',
@@ -74,8 +74,8 @@ class EmailStep extends React.Component {
             },
             true);
     }
-    validateEmail (email) {
-        if (!email) return this.props.intl.formatMessage({id: 'general.required'});
+    validateEmailIfPresent (email) {
+        if (!email) return null;
         const localResult = validate.validateEmailLocally(email);
         if (!localResult.valid) return this.props.intl.formatMessage({id: localResult.errMsgId});
         return validate.validateEmailRemotely(email).then(
@@ -87,7 +87,8 @@ class EmailStep extends React.Component {
             }
         );
     }
-    validateForm () {
+    validateForm (values) {
+        if (!values.email) return {email: this.props.intl.formatMessage({id: 'general.required'})};
         return {};
     }
     handleValidSubmit (formData, formikBag) {
@@ -165,7 +166,7 @@ class EmailStep extends React.Component {
                                 id="email"
                                 name="email"
                                 placeholder={this.props.intl.formatMessage({id: 'general.emailAddress'})}
-                                validate={this.validateEmail}
+                                validate={this.validateEmailIfPresent}
                                 validationClassName="validation-full-width-input"
                                 /* eslint-disable react/jsx-no-bind */
                                 onBlur={() => validateField('email')}
